@@ -67,6 +67,7 @@ def isValidEmail(PAGE_SOURCE, company_domain, sample_emails):
         if re.match(f'._*@{company_domain}.*', email):
             LIST_OF_EMAIL.append(email)
         LIST_OF_EMAIL.append(email)
+            # LIST_OF_EMAIL[company_domain].append([email])
 
 def getValidEmail():
     print('\t\n Email After Verfication')

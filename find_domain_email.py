@@ -52,7 +52,7 @@ def match_with_sample_email(email, sample_email):
     
 def find_domain_email(csf_file):
     df = pd.read_csv(csv_file, engine='python', encoding='ISO-8859-1')
-    if 1 :#try:
+    try:
         df = df[:MAX_RECORDS]
         df.fillna('', inplace=True)
         for i in range(len(df)):
@@ -81,8 +81,9 @@ def find_domain_email(csf_file):
                             print(f"\t[ FOUND !! ], making entry for {domain}:{email}")
                             df.at[i,'email_right'], df.at[i,'relevent_email'] = email_right, email
                             break
-                        time.sleep(5)
-                        WebDriverWait(driver, 4).until(EC.element_to_be_clickable((By.ID, "pnnext"))).click()
+                        time.sleep(5) 
+                        WebDriverWait(driver, 4).until(EC.element_to_be_clickable((By.ID, "sb_pagN sb_pagN_bp b_widePag sb_bp"))).click()   #bing search next page click
+                    
                     except NoSuchElementException as err:
                         print(f'\tError Occured(NoSuchElement), No more Pages to crawl !!..')
                         break
@@ -100,10 +101,9 @@ def find_domain_email(csf_file):
                     print("\tnot found email!")
                     DOMAIIN_EMAIL_MAP[domain] = None
 
-
-    # except Exception as err:
-    #     print(err)
-    #     print(f'\tError Ocurred !!..')
+    except Exception as err:
+        print(err)
+        print(f'\tError Ocurred !!..')
 
     return df
 
@@ -124,7 +124,6 @@ def extract_email(PAGE_SOURCE, domain, sample_email):
         # skip if email would not match sample-email
         if not match_with_sample_email(email, sample_email):
             continue
-
         # skip email left is less then 3 character
         if len(email.split("@")[0]) < 3:
             continue

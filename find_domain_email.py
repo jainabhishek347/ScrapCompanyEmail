@@ -20,7 +20,7 @@ IGNORE_EMAIL_LEFT = [".*career.*", '.*info.*',
                 '.*outlook.*', '.*ymail.*', '.*yahoo.*',
                 '^first@.*', '^last@.*', '^flast@.*', '^lfirst@.*',
                 '^l.first@.*', '^f.last@.*', '^last.first@.*', '^first.last@.*',
-                '^firstname_lastname@.*', '^lastname_firstname@.*', 
+                '^firstname_lastname@.*', '^lastname_firstname@.*', '.*xx.*"'
                 '^firstname.lastname@.*', '^lastname.firstname@.*', '^xx.*', '^xxx.*',
                 '^xyz.*', '^abc.*']
 
@@ -50,7 +50,7 @@ def match_with_sample_email(email, sample_email):
 
     return True
     
-def find_domain_email(csf_file):
+def find_domain_email(driver, csv_file):
     df = pd.read_csv(csv_file, engine='python', encoding='ISO-8859-1')
     try:
         df = df[:MAX_RECORDS]
@@ -82,7 +82,7 @@ def find_domain_email(csf_file):
                             df.at[i,'email_right'], df.at[i,'relevent_email'] = email_right, email
                             break
                         time.sleep(5) 
-                        WebDriverWait(driver, 4).until(EC.element_to_be_clickable((By.ID, "sb_pagN sb_pagN_bp b_widePag sb_bp"))).click()   #bing search next page click
+                        WebDriverWait(driver, 4).until(EC.element_to_be_clickable((By.ID, "pnnext"))).click()   #google search next page click
                     
                     except NoSuchElementException as err:
                         print(f'\tError Occured(NoSuchElement), No more Pages to crawl !!..')
@@ -128,10 +128,9 @@ def extract_email(PAGE_SOURCE, domain, sample_email):
         if len(email.split("@")[0]) < 3:
             continue
         return email
-
     return None
 
-if __name__ =='__main__':
+def main():
     options = Options()
     options.add_argument("start-maximized")
     options.add_experimental_option("prefs", {"profile.default_content_settings.cookies": 2})
@@ -139,9 +138,11 @@ if __name__ =='__main__':
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.delete_all_cookies()
     csv_file = 'data_getemail_public.csv'
-    result_df = find_domain_email(csv_file)
+    result_df = find_domain_email(driver, csv_file)
     print(result_df)
     print("saving result into csv - data_getemail_public_result.csv ")
     result_df.to_csv('data_getemail_public_result.csv')
-
     driver.close()
+
+if __name__ == '__main__':
+    main()
